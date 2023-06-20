@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/dynamodb-adapter": "^1.0.0",
     "@auth/prisma-adapter": "^1.0.0",
     "@aws-sdk/client-dynamodb": "^3.354.0",
     "@aws-sdk/lib-dynamodb": "^3.354.0",
+    "@next-auth/dynamodb-adapter": "^3.0.2",
     "@prisma/client": "^4.15.0",
     "@stripe/stripe-js": "^1.54.0",
     "@types/node": "20.2.5",

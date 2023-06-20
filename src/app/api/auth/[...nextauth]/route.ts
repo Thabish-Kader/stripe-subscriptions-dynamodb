@@ -1,12 +1,16 @@
+import { DynamoDB, DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocument, PutCommand } from "@aws-sdk/lib-dynamodb";
 import NextAuth, { NextAuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 
+import GoogleProvider from "next-auth/providers/google";
+import { DynamoDBAdapter } from "@auth/dynamodb-adapter";
 import { Adapter } from "next-auth/adapters";
-import prisma from "../../../../../prisma/prisma";
 import Stripe from "stripe";
 import docClient from "@/app/dynamodb";
-import { PutCommand } from "@aws-sdk/lib-dynamodb";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+	apiVersion: "2022-11-15",
+});
 
 export const authOptions: NextAuthOptions = {
 	providers: [
@@ -18,22 +22,7 @@ export const authOptions: NextAuthOptions = {
 	secret: process.env.NEXTAUTH_SECRET,
 
 	callbacks: {
-		async session({ session, user }) {
-			session!.user!.id = user.id;
-			session!.user!.stripeCustomerId = user.stripeCustomerId;
-			session!.user!.isActive = user.isActive;
-			return session;
-		},
-	},
-
-	events: {
-		createUser: async ({ user }) => {
-			console.log("Stripe Trigger");
-			const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-				apiVersion: "2022-11-15",
-			});
-			console.log("Customer Trigger");
-
+		async signIn({ user }) {
 			await stripe.customers
 				.create({
 					email: user.email!,
@@ -42,13 +31,38 @@ export const authOptions: NextAuthOptions = {
 				.then(async (customer) => {
 					const createUserParmas = {
 						TableName: "stripe-customers",
-						Item: { id: customer.id, email: customer.email },
+						Item: {
+							...customer,
+						},
 					};
 
-					return docClient.send(new PutCommand(createUserParmas));
+					await docClient.send(new PutCommand(createUserParmas));
 				});
+			return true;
 		},
 	},
+
+	// events: {
+	// 	createUser: async ({ user }) => {
+	// 		const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+	// 			apiVersion: "2022-11-15",
+	// 		});
+
+	// 		await stripe.customers
+	// 			.create({
+	// 				email: user.email!,
+	// 				name: user.name!,
+	// 			})
+	// 			.then(async (customer) => {
+	// 				const createUserParams = {
+	// 					TableName: "stripe-customers",
+	// 					Item: { id: customer.id, email: customer.email },
+	// 				};
+
+	// 				await client.send(new PutCommand(createUserParams));
+	// 			});
+	// 	},
+	// },
 };
 
 const handler = NextAuth(authOptions);
