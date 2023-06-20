@@ -2,7 +2,7 @@
 import { useState } from "react";
 import PricingTable from "../components/pricingTable";
 import getStripe from "../utils/getStripe";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const baseBtnStyle =
 	"bg-slate-100 hover:bg-slate-200 text-black px-6 py-2 rounded-md capitalize font-bold mt-1";
@@ -10,7 +10,8 @@ const baseBtnStyle =
 export default function Page() {
 	const [type, setType] = useState<string>("monthly");
 	const [plan, setPlan] = useState<string>("price_1NDCWcIMQotP1KSIBt3qrxLB");
-
+	const { data: session } = useSession();
+	console.log(session?.user);
 	const handleCreateCheckoutSession = async (productId: string) => {
 		const res = await fetch(`/api/stripe/checkout-session`, {
 			method: "POST",

@@ -1,6 +1,6 @@
-# How To Integrate Subscriptions Into Your Next.js Project (/app). (Next.js, Next-Auth, Prisma, Stripe)
+# Integrate Stripe Subscription in Next Js 13 with DynamoDb
 
-[Author](https://github.com/BastidaNicolas/nextauth-prisma-stripe/tree/master)
+Go to the orginal repo with prisma - [Author](https://github.com/BastidaNicolas/nextauth-prisma-stripe/tree/master)
 
 ![nextauth-prisma-stripe vercel app_subscription](https://github.com/BastidaNicolas/nextauth-prisma-stripe/assets/74965310/8d54f9ac-0121-416c-a83e-63f3ec6d794a)
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
