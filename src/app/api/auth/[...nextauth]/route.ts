@@ -68,45 +68,6 @@ export const authOptions: NextAuthOptions = {
 
 					await docClient.send(new PutCommand(createUserParmas));
 				});
-			// const queryUserParams = {
-			// 	TableName: process.env.NEXT_PUBLIC_TABLE_NAME,
-			// 	KeyConditionExpression: "id = :id",
-			// 	ExpressionAttributeValues: {
-			// 		":email": session.user?.id!,
-			// 	},
-			// };
-
-			// const existingUser = await docClient.send(
-			// 	new QueryCommand(queryUserParams)
-			// );
-			// const customers = existingUser.Items as TCustomer[];
-
-			// if (customers.length > 0) {
-			// 	session.user!.id = customers[0].id;
-			// 	session.user!.stripeCustomerId = customers[0].id;
-			// 	session.user!.isActive = customers[0].isActive;
-			// 	return session;
-			// }
-			// await stripe.customers
-			// 	.create({
-			// 		email: session.user?.email!,
-			// 		name: session.user?.name!,
-			// 	})
-			// 	.then(async (customer) => {
-			// 		session!.user!.id = customer.id;
-			// 		session!.user!.stripeCustomerId = customer.id;
-			// 		session!.user!.isActive = false;
-
-			// 		const createUserParmas = {
-			// 			TableName: process.env.NEXT_PUBLIC_TABLE_NAME,
-			// 			Item: {
-			// 				...customer,
-			// 				isActive: false,
-			// 			},
-			// 		};
-
-			// 		await docClient.send(new PutCommand(createUserParmas));
-			// 	});
 
 			return session;
 		},

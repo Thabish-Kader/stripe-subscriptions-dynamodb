@@ -42,13 +42,13 @@ export interface TCustomer {
 	subscriptionId: string;
 }
 
-export interface InvoiceSettings {
+interface InvoiceSettings {
 	custom_fields: null;
 	default_payment_method: null;
 	footer: null;
 	rendering_options: null;
 }
 
-export interface Metadata {
+interface Metadata {
 	order_id: string;
 }

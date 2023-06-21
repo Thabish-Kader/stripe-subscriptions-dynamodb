@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import prisma from "../../../../prisma/prisma";
+
 import { NextRequest, NextResponse } from "next/server";
 import docClient from "@/app/dynamodb";
 import { UpdateCommand } from "@aws-sdk/lib-dynamodb";
