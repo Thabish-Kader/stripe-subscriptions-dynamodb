@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
 
 	const checkoutSession = await stripe.checkout.sessions.create({
 		mode: "subscription",
+
 		customer: session.user.stripeCustomerId,
 		line_items: [
 			{
@@ -38,11 +39,13 @@ export async function POST(req: NextRequest) {
 			process.env.NEXT_PUBLIC_WEBSITE_URL +
 			`?session_id={CHECKOUT_SESSION_ID}`,
 		cancel_url: process.env.NEXT_PUBLIC_WEBSITE_URL,
+
 		subscription_data: {
 			metadata: {
 				// so that we can manually check in Stripe for whether a customer has an active subscription later, or if our webhook integration breaks.
 				payingUserEmail: session.user?.email!,
 			},
+			trial_period_days: 14,
 		},
 	});
 

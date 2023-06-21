@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 export default function Page() {
 	const router = useRouter();
 	const { data: session } = useSession();
-	console.log(session);
+
 	const handleDeleteSubscription = async (productId: string) => {
 		const res = await fetch(`/api/stripe/subscription-cancel`, {
 			method: "POST",
