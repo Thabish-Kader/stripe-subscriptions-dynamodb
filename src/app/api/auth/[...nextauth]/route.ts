@@ -45,6 +45,7 @@ export const authOptions: NextAuthOptions = {
 				session.user!.id = customers[0].id;
 				session.user!.stripeCustomerId = customers[0].id;
 				session.user!.isActive = customers[0].isActive;
+				session.user!.subscriptionId = customers[0].subscriptionId;
 				return session;
 			}
 			await stripe.customers

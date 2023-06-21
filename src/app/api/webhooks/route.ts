@@ -42,6 +42,7 @@ const webhookHandler = async (req: NextRequest) => {
 
 		// getting to the data we want from the event
 		const subscription = event.data.object as Stripe.Subscription;
+		const subscriptionId = subscription.id;
 		const customerEmail = subscription.metadata.payingUserEmail;
 
 		switch (event.type) {
@@ -49,9 +50,11 @@ const webhookHandler = async (req: NextRequest) => {
 				const updateUserSubscriptionTrueParmas = {
 					TableName: "product-vision-customers",
 					Key: { email: customerEmail },
-					UpdateExpression: "SET isActive = :isActive",
+					UpdateExpression:
+						"SET isActive = :isActive, subscriptionId = :subscriptionId",
 					ExpressionAttributeValues: {
 						":isActive": true,
+						":subscriptionId": subscriptionId,
 					},
 				};
 
@@ -73,6 +76,7 @@ const webhookHandler = async (req: NextRequest) => {
 					new UpdateCommand(updateUserSubscriptionFalseParmas)
 				);
 				break;
+
 			default:
 				console.warn(`🤷‍♀️ Unhandled event type: ${event.type}`);
 				break;

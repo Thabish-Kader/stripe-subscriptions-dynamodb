@@ -6,6 +6,7 @@ declare module "next-auth" {
 			id: string;
 			stripeCustomerId: string;
 			isActive: boolean;
+			subscriptionId: string;
 		};
 	}
 	interface User extends DefaultUser {
@@ -38,6 +39,7 @@ export interface TCustomer {
 	tax_exempt: string;
 	test_clock: null;
 	isActive: boolean;
+	subscriptionId: string;
 }
 
 export interface InvoiceSettings {
