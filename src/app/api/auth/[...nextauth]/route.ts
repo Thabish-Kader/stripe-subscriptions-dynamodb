@@ -27,44 +27,6 @@ export const authOptions: NextAuthOptions = {
 	secret: process.env.NEXTAUTH_SECRET,
 
 	callbacks: {
-		// async signIn({ user }) {
-		// 	const queryUserParams = {
-		// 		TableName: "product-vision-customers",
-		// 		KeyConditionExpression: "email = :email",
-		// 		ExpressionAttributeValues: {
-		// 			":email": user.email!,
-		// 		},
-		// 	};
-
-		// 	const existingUser = await docClient.send(
-		// 		new QueryCommand(queryUserParams)
-		// 	);
-
-		// 	if (existingUser.Items && existingUser.Items.length > 0) {
-		// 		// User already exists, no need to create a new customer
-		// 		return true;
-		// 	}
-
-		// 	await stripe.customers
-		// 		.create({
-		// 			email: user.email!,
-		// 			name: user.name!,
-		// 		})
-		// 		.then(async (customer) => {
-		// 			user.stripeCustomerId = customer.id;
-
-		// 			const createUserParmas = {
-		// 				TableName: "product-vision-customers",
-		// 				Item: {
-		// 					...customer,
-		// 					isActive: false,
-		// 				},
-		// 			};
-
-		// 			await docClient.send(new PutCommand(createUserParmas));
-		// 		});
-		// 	return true;
-		// },
 		async session({ session, user }) {
 			const queryUserParams = {
 				TableName: "product-vision-customers",
@@ -83,6 +45,7 @@ export const authOptions: NextAuthOptions = {
 				session.user!.id = customers[0].id;
 				session.user!.stripeCustomerId = customers[0].id;
 				session.user!.isActive = customers[0].isActive;
+				return session;
 			}
 			await stripe.customers
 				.create({
@@ -104,6 +67,45 @@ export const authOptions: NextAuthOptions = {
 
 					await docClient.send(new PutCommand(createUserParmas));
 				});
+			// const queryUserParams = {
+			// 	TableName: process.env.NEXT_PUBLIC_TABLE_NAME,
+			// 	KeyConditionExpression: "id = :id",
+			// 	ExpressionAttributeValues: {
+			// 		":email": session.user?.id!,
+			// 	},
+			// };
+
+			// const existingUser = await docClient.send(
+			// 	new QueryCommand(queryUserParams)
+			// );
+			// const customers = existingUser.Items as TCustomer[];
+
+			// if (customers.length > 0) {
+			// 	session.user!.id = customers[0].id;
+			// 	session.user!.stripeCustomerId = customers[0].id;
+			// 	session.user!.isActive = customers[0].isActive;
+			// 	return session;
+			// }
+			// await stripe.customers
+			// 	.create({
+			// 		email: session.user?.email!,
+			// 		name: session.user?.name!,
+			// 	})
+			// 	.then(async (customer) => {
+			// 		session!.user!.id = customer.id;
+			// 		session!.user!.stripeCustomerId = customer.id;
+			// 		session!.user!.isActive = false;
+
+			// 		const createUserParmas = {
+			// 			TableName: process.env.NEXT_PUBLIC_TABLE_NAME,
+			// 			Item: {
+			// 				...customer,
+			// 				isActive: false,
+			// 			},
+			// 		};
+
+			// 		await docClient.send(new PutCommand(createUserParmas));
+			// 	});
 
 			return session;
 		},

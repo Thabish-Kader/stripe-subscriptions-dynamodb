@@ -6,34 +6,35 @@ import { useSession } from "next-auth/react";
 import { TCustomer } from "../../../types";
 const Dynamo = () => {
 	const { data: session } = useSession();
-	const update = () => {
+	const update = async () => {
 		const updateUserParmas = {
 			TableName: "product-vision-customers",
-			Key: { id: "dddd" },
-			UpdateExpression: "SET isActive = :isActiveValue",
+			Key: { email: session?.user?.email },
+			UpdateExpression: "SET isActive = :isActive",
 			ExpressionAttributeValues: {
-				":isActiveValue": false,
+				":isActive": true,
 			},
 		};
 
-		return docClient.send(new UpdateCommand(updateUserParmas));
+		await docClient.send(new UpdateCommand(updateUserParmas));
 	};
 
-	const create = () => {
+	const create = async () => {
 		const createUserParmas = {
-			TableName: "product-vision-customers",
-			Item: { email: "test@email.com", isActive: true, incvoice: "ssss" },
+			TableName: "proto",
+			Item: { ...session?.user },
 		};
 
-		return docClient.send(new PutCommand(createUserParmas));
+		await docClient.send(new PutCommand(createUserParmas));
 	};
 
 	const read = async () => {
 		const queryUserParams = {
 			TableName: "product-vision-customers",
-			KeyConditionExpression: "email = :email",
+			KeyConditionExpression: "email = :email and id = :id",
 			ExpressionAttributeValues: {
 				":email": session?.user?.email,
+				":id": session?.user?.stripeCustomerId,
 			},
 		};
 
@@ -42,9 +43,9 @@ const Dynamo = () => {
 		);
 
 		const items = exisitngUser.Items as TCustomer[];
-
-		console.log(items.length);
+		console.log(items);
 	};
+
 	return (
 		<div className="flex flex-col  ">
 			<button onClick={create}>Create</button>

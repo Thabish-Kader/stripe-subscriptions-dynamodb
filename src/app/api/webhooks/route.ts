@@ -1,6 +1,8 @@
 import Stripe from "stripe";
 import prisma from "../../../../prisma/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import docClient from "@/app/dynamodb";
+import { UpdateCommand } from "@aws-sdk/lib-dynamodb";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 	// https://github.com/stripe/stripe-node#configuration
@@ -40,31 +42,36 @@ const webhookHandler = async (req: NextRequest) => {
 
 		// getting to the data we want from the event
 		const subscription = event.data.object as Stripe.Subscription;
+		const customerEmail = subscription.metadata.payingUserEmail;
 
 		switch (event.type) {
 			case "customer.subscription.created":
-				await prisma.user.update({
-					// Find the customer in our database with the Stripe customer ID linked to this purchase
-					where: {
-						stripeCustomerId: subscription.customer as string,
+				const updateUserSubscriptionTrueParmas = {
+					TableName: "product-vision-customers",
+					Key: { email: customerEmail },
+					UpdateExpression: "SET isActive = :isActive",
+					ExpressionAttributeValues: {
+						":isActive": true,
 					},
-					// Update that customer so their status is now active
-					data: {
-						isActive: true,
-					},
-				});
+				};
+
+				await docClient.send(
+					new UpdateCommand(updateUserSubscriptionTrueParmas)
+				);
 				break;
 			case "customer.subscription.deleted":
-				await prisma.user.update({
-					// Find the customer in our database with the Stripe customer ID linked to this purchase
-					where: {
-						stripeCustomerId: subscription.customer as string,
+				const updateUserSubscriptionFalseParmas = {
+					TableName: "product-vision-customers",
+					Key: { email: customerEmail },
+					UpdateExpression: "SET isActive = :isActive",
+					ExpressionAttributeValues: {
+						":isActive": false,
 					},
-					// Update that customer so their status is now active
-					data: {
-						isActive: false,
-					},
-				});
+				};
+
+				await docClient.send(
+					new UpdateCommand(updateUserSubscriptionFalseParmas)
+				);
 				break;
 			default:
 				console.warn(`🤷‍♀️ Unhandled event type: ${event.type}`);

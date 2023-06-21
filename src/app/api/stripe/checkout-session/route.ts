@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 		subscription_data: {
 			metadata: {
 				// so that we can manually check in Stripe for whether a customer has an active subscription later, or if our webhook integration breaks.
-				payingUserId: session.user.stripeCustomerId,
+				payingUserEmail: session.user?.email!,
 			},
 		},
 	});
